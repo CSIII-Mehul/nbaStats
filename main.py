@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import random
 import math
 import csv
-
+from process_data import process
 def sigmoid(Z):
     return 1/(1+np.exp(-Z))
 
