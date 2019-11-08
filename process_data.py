@@ -42,12 +42,28 @@ def process(filename):
 
     
     
-
+   
     z = np.delete(ball_data, 0, axis=0)
     z2= np.delete(z, 1, axis=1)
     
-    z1= np.array(z, dtype= np.float)
+    z1= np.array(z, dtype= np.float)    
     z3 = np.array(z2 , dtype= np.float)
+
+    categories = np.unique(z3[:,0])
+
+    D= 0
+    N = z3.shape[0]
+    catOHE = categories.shape[0]
+   # print(N)
+    X2 = np.zeros((N, D+catOHE))
+    X2[:,0:D] = z3[:,1:D+1]
+
+    for n in range(N):
+        t = categories.tolist().index(z3[n,0])
+        X2[n,t+D] = 1
+    
+    print(X2)
+
     z3[:,0]= (z3[:,0]-np.mean(z3[:,0]))/np.std(z3[:,0])
     z3[:,1]= (z3[:,1]-np.mean(z3[:,1]))/np.std(z3[:,1])
     z3[:,2]= (z3[:,2]-np.mean(z3[:,2]))/np.std(z3[:,2])
@@ -69,3 +85,4 @@ X2 = np.zeros((N, D+catOHE))
     
 
 '''
+process('nba_data2016-2018.csv')
