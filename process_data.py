@@ -51,7 +51,13 @@ def process(filename):
 
     categories = np.unique(z3[:,0])
 
-    D= 0
+
+    #z3[:,0]= (z3[:,0]-np.mean(z3[:,0]))/np.std(z3[:,0])
+    z3[:,1]= (z3[:,1]-np.mean(z3[:,1]))/np.std(z3[:,1])
+    z3[:,2]= (z3[:,2]-np.mean(z3[:,2]))/np.std(z3[:,2])
+
+    
+    D= 2
     N = z3.shape[0]
     catOHE = categories.shape[0]
    # print(N)
@@ -62,21 +68,18 @@ def process(filename):
         t = categories.tolist().index(z3[n,0])
         X2[n,t+D] = 1
     
-    print(X2)
-
-    z3[:,0]= (z3[:,0]-np.mean(z3[:,0]))/np.std(z3[:,0])
-    z3[:,1]= (z3[:,1]-np.mean(z3[:,1]))/np.std(z3[:,1])
-    z3[:,2]= (z3[:,2]-np.mean(z3[:,2]))/np.std(z3[:,2])
+    #print(X2)
 
     true_ball_data = []       
     Y= []
     for a in range(len(z3)):
-        true_ball_data.append(z3[a])
+        true_ball_data.append(X2[a])
         Y.append(z1[a][1])
     
     true_ball_data= np.array(true_ball_data)
     Y= np.array(Y)
-
+    
+    print(true_ball_data)
     return true_ball_data, Y
 '''
 X2 = np.zeros((N, D+catOHE))
