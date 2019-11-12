@@ -79,7 +79,7 @@ def process(filename):
     true_ball_data= np.array(true_ball_data)
     Y= np.array(Y)
     
-    print(true_ball_data)
+    #print(true_ball_data)
     return true_ball_data, Y
 '''
 X2 = np.zeros((N, D+catOHE))
