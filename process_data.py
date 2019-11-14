@@ -60,15 +60,15 @@ def process(filename):
     D= 2
     N = z3.shape[0]
     catOHE = categories.shape[0]
-   # print(N)
+    #print(N)
     X2 = np.zeros((N, D+catOHE))
     X2[:,0:D] = z3[:,1:D+1]
-
     for n in range(N):
         t = categories.tolist().index(z3[n,0])
         X2[n,t+D] = 1
+        
     
-    #print(X2)
+
 
     true_ball_data = []       
     Y= []
