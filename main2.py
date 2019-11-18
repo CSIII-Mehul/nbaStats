@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import random
 import math
 import csv
-from process_data import process
+from process_data2 import process
 
 
 
