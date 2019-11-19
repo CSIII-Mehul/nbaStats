@@ -5,10 +5,74 @@ import math
 import csv
 from process_data2 import process
 
+def sigmoid(Z):
+    return 1/(1+np.exp(-Z))
+
+def feedforward(X, B, W1, B2, W2):
+    A= np.dot(X, W1)+B
+    Z= sigmoid(A)
+    A1= np.dot(Z, W2)+B2
+    Z2= sigmoid(A1)
+
+    return Z2, Z
+
+def cost(Z2,Y):
+    y= Y
+    x= Z2
+    y= y.reshape((y.shape[0], 1))
+    
+    return (y * np.log(x) + (1 - y) * np.log(1 - x)).sum()
+
+def gradientDesc(Z2, Y):
+
+    y= Y
+    x= Z2
+    y= y.reshape((y.shape[0], 1))
+    
+    return (y/x) - (1-y)/(1-x)
+
+def back_propW2(gradientCost, Z2, Z):
+    gradientCost = gradientCost.reshape((gradientCost.shape[0], 1))
+
+    return Z.T.dot(gradientCost* Z2 * (1-Z2))
+
+def back_propB2(gradientCost, Z2):
+    gradientCost = gradientCost.reshape((gradientCost.shape[0], 1))
+
+    return (gradientCost* Z2 * (1-Z2)).sum(axis=0)
+
+def back_propW1(gradientCost, Z2, Z, W2, X):
+    gradientCost = gradientCost.reshape((gradientCost.shape[0], 1))
+    
+    preds = (gradientCost* Z2* (1-Z2))
+    preds_0 = (preds.dot(W2.T)  * Z *(1-Z))
+  
+    weights= np.dot(X.T, preds_0)
+  
+    return weights
+
+def back_propB1(gradientCost, Z2, Z, W2):
+    gradientCost = gradientCost.reshape((gradientCost.shape[0], 1))
+
+    preds = (gradientCost* Z2* (1-Z2))
+    preds_0 = (preds.dot(W2.T)  * Z *(1-Z))
+  
+    return preds_0.sum(axis=0)
+
+def accuracy(Z2, Y):
+    correct = 0
+    
+    for i in range(len(Z2)):
+        if(Y[i] == np.rint(Z2[i])):
+            correct = correct+1
+    class_rate = correct/len(Z2)
+  
+    return class_rate
+
 
 
 def run2():
-     x, y = process('nba_data2016-2018.csv')
+     x, y = process('nba_data_2016-2018_control_real.csv')
          
      # learning rate for the algorithm
      learning_rate = 0.001
@@ -17,7 +81,6 @@ def run2():
 
      train_size=.75
      X_train = x[:(int)(x.shape[0]*train_size),:]
-     print(X_train[len(X_train)-1])
      X_test = x[(int)(x.shape[0]*train_size):,:]
      Y_train = y[:(int)(y.shape[0]*train_size)]
      Y_test = y[(int)(y.shape[0]*train_size):]
@@ -39,12 +102,12 @@ def run2():
      # IMPORTANT: statistic = (Yes/No - No/Yes)^2 / (Yes/No + No/Yes), Is the Mcnemar's test (a type of chi-square), to compare between 2 binary classification algorithms; with an alpha level of .05, the critical value is 3.84
      losses= []
      rates = 0
-     
+     learning_rate= 0.0001
      for i in range(len(X_t)):
          X= X_t[i]
          Y= Y_t[i]
          
-  
+         
          Z2, Z1= feedforward(X, B, W1, B2, W2)
 
          l = cost(Z2, Y)
@@ -68,7 +131,6 @@ def run2():
      plt.plot(losses)
      plt.show()  
     
-
      return (rates/100)
 
 

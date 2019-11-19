@@ -61,16 +61,9 @@ def process(filename):
         X2[n,t+D] = 1
 
     
-
-    return 0
-'''
-X2 = np.zeros((N, D+catOHE))
-    X2[:,0:D] = X[:,1:D+1]
-
-
-
     true_ball_data = []       
     Y= []
+
     for a in range(len(z3)):
         true_ball_data.append(X2[a])
         Y.append(z1[a][1])
@@ -78,8 +71,18 @@ X2 = np.zeros((N, D+catOHE))
     true_ball_data= np.array(true_ball_data)
     Y= np.array(Y)
     
-    #print(true_ball_data)
+
+    print(true_ball_data[3])
     return true_ball_data, Y
+'''
+X2 = np.zeros((N, D+catOHE))
+    X2[:,0:D] = X[:,1:D+1]
+
+
+
+
+    
+    return 
 
 '''
 process('nba_data_2016-2018_control_real.csv')

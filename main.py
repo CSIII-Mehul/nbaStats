@@ -130,10 +130,10 @@ def run():
 
      
      
+     print(rates/100)
      plt.plot(losses)
      plt.show()  
     
-
      return (rates/100)
 
 
