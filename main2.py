@@ -102,7 +102,7 @@ def run2():
      # IMPORTANT: statistic = (Yes/No - No/Yes)^2 / (Yes/No + No/Yes), Is the Mcnemar's test (a type of chi-square), to compare between 2 binary classification algorithms; with an alpha level of .05, the critical value is 3.84
      losses= []
      rates = 0
-     learning_rate= 0.0001
+    
      for i in range(len(X_t)):
          X= X_t[i]
          Y= Y_t[i]
@@ -131,6 +131,7 @@ def run2():
      plt.plot(losses)
      plt.show()  
     
+     print(rates/100)
      return (rates/100)
 
 
