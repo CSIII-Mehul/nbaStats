@@ -72,7 +72,7 @@ def process(filename):
     Y= np.array(Y)
     
 
-    print(true_ball_data[3])
+   # print(true_ball_data[3])
     return true_ball_data, Y
 '''
 X2 = np.zeros((N, D+catOHE))
@@ -85,4 +85,4 @@ X2 = np.zeros((N, D+catOHE))
     return 
 
 '''
-process('nba_data_2016-2018_control_real.csv')
+#process('nba_data_2016-2018_control_real.csv')

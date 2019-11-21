@@ -5,6 +5,7 @@ import math
 import csv
 from process_data import process
 
+
 def sigmoid(Z):
     return 1/(1+np.exp(-Z))
 
@@ -82,7 +83,7 @@ def run():
 
      train_size=.75
      X_train = x[:(int)(x.shape[0]*train_size),:]
-     print(X_train[len(X_train)-1])
+    # print(X_train[len(X_train)-1])
      X_test = x[(int)(x.shape[0]*train_size):,:]
      Y_train = y[:(int)(y.shape[0]*train_size)]
      Y_test = y[(int)(y.shape[0]*train_size):]
@@ -126,11 +127,12 @@ def run():
          
          
          if(i>481):
-           rates+=(accuracy(Z2,Y))
+           rates+=(accuracy(Z2,Y)) *100
 
      
      
      print(rates/100)
+     plt.title('Classifier 1 (3 point percentage)')
      plt.plot(losses)
      plt.show()  
     
@@ -138,5 +140,5 @@ def run():
 
 
 
-run()
+#run()
 

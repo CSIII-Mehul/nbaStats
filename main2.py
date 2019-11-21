@@ -124,16 +124,17 @@ def run2():
          
          
          if(i>481):
-           rates+=(accuracy(Z2,Y))
+           rates+=(accuracy(Z2,Y)) *100
 
      
-     
+    
+     print(rates/100)
+     plt.title('Classifier 2 (control)')
      plt.plot(losses)
      plt.show()  
     
-     print(rates/100)
      return (rates/100)
+  
 
 
-
-run2()
+#run2()

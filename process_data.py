@@ -88,4 +88,4 @@ X2 = np.zeros((N, D+catOHE))
     
 
 '''
-process('nba_data2016-2018.csv')
+#process('nba_data2016-2018.csv')
