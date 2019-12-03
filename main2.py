@@ -13,7 +13,7 @@ def feedforward(X, B, W1, B2, W2):
     Z= sigmoid(A)
     A1= np.dot(Z, W2)+B2
     Z2= sigmoid(A1)
-
+    
     return Z2, Z
 
 def cost(Z2,Y):
@@ -86,12 +86,12 @@ def run2():
      Y_test = y[(int)(y.shape[0]*train_size):]
 
      D= x.shape[1]
-     M= 20
+     M= 45
      B= np.random.rand(M)
      W1= np.random.rand(D,M)
      B2 = np.random.rand(1)
      W2 = np.random.rand(M,1)
-
+     #print(D)
      #each batch is now 6 "lines" because 3498/583=6
      batches = 583
 
@@ -110,6 +110,8 @@ def run2():
          
          Z2, Z1= feedforward(X, B, W1, B2, W2)
 
+        
+
          l = cost(Z2, Y)
          losses.append(-l)
          
@@ -122,6 +124,7 @@ def run2():
          
          B += learning_rate* back_propB1(gradientDesc(Z2, Y), Z2, Z1, W2)
          
+         #print(accuracy(Z2,Y))
          
          if(i>481):
            rates+=(accuracy(Z2,Y)) *100

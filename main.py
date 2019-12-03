@@ -11,11 +11,12 @@ def sigmoid(Z):
 
 def feedforward(X, B, W1, B2, W2):
     A= np.dot(X, W1)+B
-    Z= sigmoid(A)
-    A1= np.dot(Z, W2)+B2
+    Z1= sigmoid(A)
+    A1= np.dot(Z1, W2)+B2
     Z2= sigmoid(A1)
 
-    return Z2, Z
+    parameters = {"Z2": Z2, "Z1": Z1 , "X": X }
+    return parameters
 
 def cost(Z2,Y):
 
@@ -35,7 +36,9 @@ def gradientDesc(Z2, Y):
 
 
 
-def back_propW2(gradientCost, Z2, Z):
+def back_propW2(gradientCost, parameters):
+    Z2= parameters["Z2"]
+    Z= parameters["Z1"]
     gradientCost = gradientCost.reshape((gradientCost.shape[0], 1))
 
     return Z.T.dot(gradientCost* Z2 * (1-Z2))
@@ -45,7 +48,11 @@ def back_propB2(gradientCost, Z2):
 
     return (gradientCost* Z2 * (1-Z2)).sum(axis=0)
 
-def back_propW1(gradientCost, Z2, Z, W2, X):
+def back_propW1(gradientCost, W2, parameters):
+    Z2= parameters["Z2"]
+    Z= parameters["Z1"]
+    X= parameters["X"]
+
     gradientCost = gradientCost.reshape((gradientCost.shape[0], 1))
     
     preds = (gradientCost* Z2* (1-Z2))
@@ -55,7 +62,9 @@ def back_propW1(gradientCost, Z2, Z, W2, X):
   
     return weights
 
-def back_propB1(gradientCost, Z2, Z, W2):
+def back_propB1(gradientCost, W2, parameters):
+    Z2= parameters["Z2"]
+    Z= parameters["Z1"]
     gradientCost = gradientCost.reshape((gradientCost.shape[0], 1))
 
     preds = (gradientCost* Z2* (1-Z2))
@@ -111,19 +120,21 @@ def run():
          Y= Y_t[i]
          
   
-         Z2, Z1= feedforward(X, B, W1, B2, W2)
+         parameters = feedforward(X, B, W1, B2, W2)
 
+         Z2 = parameters["Z2"]
+         Z1= parameters["Z1"]
          l = cost(Z2, Y)
          losses.append(-l)
          
          
-         W2 += learning_rate* back_propW2(gradientDesc(Z2, Y), Z2, Z1)
+         W2 += learning_rate* back_propW2(gradientDesc(Z2, Y), parameters)
          
          B2 += learning_rate* back_propB2(gradientDesc(Z2, Y), Z2)
          
-         W1 += learning_rate* back_propW1(gradientDesc(Z2, Y), Z2, Z1, W2, X)
+         W1 += learning_rate* back_propW1(gradientDesc(Z2, Y), W2, parameters)
          
-         B += learning_rate* back_propB1(gradientDesc(Z2, Y), Z2, Z1, W2)
+         B += learning_rate* back_propB1(gradientDesc(Z2, Y), W2, parameters)
          
          
          if(i>481):
