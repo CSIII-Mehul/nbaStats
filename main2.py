@@ -9,24 +9,30 @@ def sigmoid(Z):
     return 1/(1+np.exp(-Z))
 
 def feedforward(X, B, W1, B2, W2):
-    A= np.dot(X, W1)+B
-    Z= sigmoid(A)
-    A1= np.dot(Z, W2)+B2
-    Z2= sigmoid(A1)
+    Z= np.dot(X, W1)+B
+    A = sigmoid(Z)
+    Z2= np.dot(A, W2)+B2
+    A2= sigmoid(Z2)
     
-    return Z2, Z
+    cache = { "Z": Z, "A": A, "W": W1, "B": B, "W2": W2, "B2": B2, "X": X} 
 
-def cost(Z2,Y):
+    return A2, cache
+
+def cost(A2,Y):
     y= Y
-    x= Z2
-    y= y.reshape((y.shape[0], 1))
+    x= A2
+    #y= y.reshape((y.shape[0], 1))
+    m = Y.shape[1]
     
-    return (y * np.log(x) + (1 - y) * np.log(1 - x)).sum()
+    cost = 1/m * (y * np.log(x) + (1 - y) * np.log(1 - x)).sum()
+    cost = np.squeeze(cost)     
 
-def gradientDesc(Z2, Y):
+    return cost
+
+def gradientDesc(A2, Y):
 
     y= Y
-    x= Z2
+    x= A2
     y= y.reshape((y.shape[0], 1))
     
     return (y/x) - (1-y)/(1-x)
@@ -59,23 +65,24 @@ def back_propB1(gradientCost, Z2, Z, W2):
   
     return preds_0.sum(axis=0)
 
-def accuracy(Z2, Y):
+def accuracy(A2, Y):
     correct = 0
     
-    for i in range(len(Z2)):
-        if(Y[i] == np.rint(Z2[i])):
+    for i in range(len(A2)):
+        if(Y[i] == np.rint(A2[i])):
             correct = correct+1
-    class_rate = correct/len(Z2)
+    class_rate = correct/len(A2)
   
     return class_rate
 
 
 
 def run2():
-     x, y = process('nba_data_2016-2018_control_real.csv')
+     x, y = process('./nbaStats/nba_data_2016-2018_control_real.csv')
+     
          
      # learning rate for the algorithm
-     learning_rate = 0.001
+     learning_rate = .01
 
      # split into 75% train and 25% test
 
@@ -106,16 +113,18 @@ def run2():
      for i in range(len(X_t)):
          X= X_t[i]
          Y= Y_t[i]
-         
-         
-         Z2, Z1= feedforward(X, B, W1, B2, W2)
+         #float problems results in necessary following problems
+         X= np.array(X,dtype=np.float32)
+         Y= np.array(Y,dtype=np.float32)
+
+         A2, cache= feedforward(X, B, W1, B2, W2)
 
         
-
-         l = cost(Z2, Y)
+         
+         l = cost(A2, Y)
          losses.append(-l)
          
-         
+         '''
          W2 += learning_rate* back_propW2(gradientDesc(Z2, Y), Z2, Z1)
          
          B2 += learning_rate* back_propB2(gradientDesc(Z2, Y), Z2)
@@ -123,12 +132,19 @@ def run2():
          W1 += learning_rate* back_propW1(gradientDesc(Z2, Y), Z2, Z1, W2, X)
          
          B += learning_rate* back_propB1(gradientDesc(Z2, Y), Z2, Z1, W2)
-         
+         '''
+
+         '''
+         A2, cache = forwardprop(X, weights["W"],  weights["B"],  weights["W2"],  weights["B2"])
+         compute_cost(A2, Y)
+         grads= backprop(Y, A2, cache)
+         weights = update_weights(weights, grads)
+         '''
          #print(accuracy(Z2,Y))
          
          if(i>481):
-           rates+=(accuracy(Z2,Y)) *100
-
+           rates+=(accuracy(A2,Y)) *100
+         
      
     
      print(rates/100)
@@ -140,4 +156,4 @@ def run2():
   
 
 
-#run2()
+run2()

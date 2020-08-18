@@ -20,60 +20,44 @@ Dict = {0: 'ATL', 1: 'BRK',
 
 
 def process(filename):
+
+    ball_data = pd.read_csv(filename)
+    ball_data = ball_data.drop(['Team'], axis=1)
+    dataset = ball_data.values
+    
+    #dataset= np.delete(dataset, 0, axis=0)
+
+    #print(ball_data.head())
+    '''
     with open(filename, 'r') as csvfile:
         lines = csv.reader(csvfile)
         ball_data = list(lines)
-
-    for x in range(len(ball_data)):
-      for y in range(5):
-       for i in range(30):
-        if (ball_data[x][y]==Dict[i]):
-            ball_data[x][y]= i
-            ball_data[x][y] = float(ball_data[x][y])
-
-        if(ball_data[x][y]=="W"):
-           ball_data[x][y]= 1
-        if(ball_data[x][y]=="L"):
-           ball_data[x][y]= 0
-        if(y>1 and x!=0):
-          ball_data[x][y] = float(ball_data[x][y])
-
-    y= np.delete(ball_data, 3, axis=1)
-    z = np.delete(y, 0, axis=0)
-    z2= np.delete(z, 1, axis=1)
-
-    z1= np.array(z, dtype= np.float)    
-    z3 = np.array(z2 , dtype= np.float)
-
-    categories = np.unique(z3[:,0])
-
-    z3[:,1]= (z3[:,1]-np.mean(z3[:,1]))/np.std(z3[:,1])
-    z3[:,2]= (z3[:,2]-np.mean(z3[:,2]))/np.std(z3[:,2])
-
-    D= 2
-    N = z3.shape[0]
-    catOHE = categories.shape[0]
-    #print(N)
-    X2 = np.zeros((N, D+catOHE))
-    X2[:,0:D] = z3[:,1:D+1]
-    for n in range(N):
-        t = categories.tolist().index(z3[n,0])
-        X2[n,t+D] = 1
+    ''' 
+    dataset[:,0:1] = convert_win(dataset[:,0:1])
+    dataset[:,1:4] = dataset[:,1:4].astype(float)
 
     
-    true_ball_data = []       
-    Y= []
+    true_ball_data = dataset[:,3:4] #input features
+    Y= dataset[:,0:1]  
 
-    for a in range(len(z3)):
-        true_ball_data.append(X2[a])
-        Y.append(z1[a][1])
     
     true_ball_data= np.array(true_ball_data)
     Y= np.array(Y)
     
 
-   # print(true_ball_data[3])
+    
     return true_ball_data, Y
+   
+      
+def convert_win(col):
+    for i in range(len(col)):
+        if(col[i]=="W"):
+            col[i]= 1
+        elif(col[i]=="L"):
+            col[i]= 0
+
+    return col.astype(float)
+
 '''
 X2 = np.zeros((N, D+catOHE))
     X2[:,0:D] = X[:,1:D+1]
@@ -85,4 +69,5 @@ X2 = np.zeros((N, D+catOHE))
     return 
 
 '''
-#process('nba_data_2016-2018_control_real.csv')
+
+process('./nbaStats/nba_data_2016-2018_control_real.csv')
