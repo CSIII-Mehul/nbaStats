@@ -37,7 +37,7 @@ def process(filename):
     dataset[:,1:4] = dataset[:,1:4].astype(float)
 
     
-    true_ball_data = dataset[:,3:4] #input features
+    true_ball_data = dataset[:,1:4] #input features
     Y= dataset[:,0:1]  
 
     

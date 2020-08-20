@@ -24,7 +24,8 @@ def cost(A2,Y):
     #y= y.reshape((y.shape[0], 1))
     m = Y.shape[1]
     
-    cost = 1/m * (y * np.log(x) + (1 - y) * np.log(1 - x)).sum()
+    cost =  1/m * (Y*np.log(A2)).sum()
+
     cost = np.squeeze(cost)     
 
     return cost
@@ -33,37 +34,38 @@ def gradientDesc(A2, Y):
 
     y= Y
     x= A2
-    y= y.reshape((y.shape[0], 1))
+   # y= y.reshape((y.shape[0], 1))
     
     return (y/x) - (1-y)/(1-x)
 
-def back_propW2(gradientCost, Z2, Z):
-    gradientCost = gradientCost.reshape((gradientCost.shape[0], 1))
+def backprop(Y, A2, cache):
+    m= Y.shape[1]
 
-    return Z.T.dot(gradientCost* Z2 * (1-Z2))
+    #dA2 = - (np.divide(Y, A2) - np.divide(1 - Y, 1 - A2))
+    dZ2 = (A2-Y)
+  #  dZ2 = gradientDesc(A2,Y)
 
-def back_propB2(gradientCost, Z2):
-    gradientCost = gradientCost.reshape((gradientCost.shape[0], 1))
+    dW2=  1/m * np.dot(cache["A"].T, dZ2)
+    dB2=  1/m * np.sum(dZ2, axis=1, keepdims = True)
+    dA = np.dot(dZ2, cache["W2"].T)
+    dZ= dA * (1-dA)
+    dW=  1/m * np.dot(cache["X"].T, dZ)
+    dB= 1/m * np.sum(dZ, axis=1, keepdims = True)
 
-    return (gradientCost* Z2 * (1-Z2)).sum(axis=0)
 
-def back_propW1(gradientCost, Z2, Z, W2, X):
-    gradientCost = gradientCost.reshape((gradientCost.shape[0], 1))
-    
-    preds = (gradientCost* Z2* (1-Z2))
-    preds_0 = (preds.dot(W2.T)  * Z *(1-Z))
-  
-    weights= np.dot(X.T, preds_0)
-  
+    grads = { "dW": dW, "dB": dB, "dW2": dW2, "dB2": dB2}
+
+    return grads
+
+def update_weights(weights, grads, learning_rate = .25):
+
+    weights["W2"] = weights["W2"] + learning_rate*grads["dW2"]
+    weights["B2"] = weights["B2"] + learning_rate*grads["dB2"]
+    weights["W1"] = weights["W1"] + learning_rate*grads["dW"]
+    weights["B"] = weights["B"] + learning_rate*grads["dB"]
+
+
     return weights
-
-def back_propB1(gradientCost, Z2, Z, W2):
-    gradientCost = gradientCost.reshape((gradientCost.shape[0], 1))
-
-    preds = (gradientCost* Z2* (1-Z2))
-    preds_0 = (preds.dot(W2.T)  * Z *(1-Z))
-  
-    return preds_0.sum(axis=0)
 
 def accuracy(A2, Y):
     correct = 0
@@ -71,7 +73,7 @@ def accuracy(A2, Y):
     for i in range(len(A2)):
         if(Y[i] == np.rint(A2[i])):
             correct = correct+1
-    class_rate = correct/len(A2)
+    class_rate = correct/len(A2) *100
   
     return class_rate
 
@@ -81,8 +83,6 @@ def run2():
      x, y = process('./nbaStats/nba_data_2016-2018_control_real.csv')
      
          
-     # learning rate for the algorithm
-     learning_rate = .01
 
      # split into 75% train and 25% test
 
@@ -98,6 +98,8 @@ def run2():
      W1= np.random.rand(D,M)
      B2 = np.random.rand(1)
      W2 = np.random.rand(M,1)
+
+     weights = {"B": B, "W1": W1, "W2": W2, "B2": B2 }
      #print(D)
      #each batch is now 6 "lines" because 3498/583=6
      batches = 583
@@ -109,7 +111,7 @@ def run2():
      # IMPORTANT: statistic = (Yes/No - No/Yes)^2 / (Yes/No + No/Yes), Is the Mcnemar's test (a type of chi-square), to compare between 2 binary classification algorithms; with an alpha level of .05, the critical value is 3.84
      losses= []
      rates = 0
-    
+     count = 0
      for i in range(len(X_t)):
          X= X_t[i]
          Y= Y_t[i]
@@ -117,12 +119,14 @@ def run2():
          X= np.array(X,dtype=np.float32)
          Y= np.array(Y,dtype=np.float32)
 
-         A2, cache= feedforward(X, B, W1, B2, W2)
-
-        
-         
+         A2, cache= feedforward(X, weights["B"], weights["W1"], weights["B2"], weights["W2"])
+ 
          l = cost(A2, Y)
          losses.append(-l)
+
+         grads= backprop(Y, A2, cache)
+         weights = update_weights(weights, grads)
+        
          
          '''
          W2 += learning_rate* back_propW2(gradientDesc(Z2, Y), Z2, Z1)
@@ -140,19 +144,19 @@ def run2():
          grads= backprop(Y, A2, cache)
          weights = update_weights(weights, grads)
          '''
-         #print(accuracy(Z2,Y))
          
-         if(i>481):
-           rates+=(accuracy(A2,Y)) *100
+         
+         #rates += (accuracy(A2,Y))
+         #count += 1
          
      
     
-     print(rates/100)
+     #print(rates/count)
      plt.title('Classifier 2 (control)')
      plt.plot(losses)
      plt.show()  
     
-     return (rates/100)
+     return 0
   
 
 
